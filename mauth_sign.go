@@ -1,6 +1,8 @@
 package go_mauth_client
 
 import (
+	"crypto/rand"
+	"crypto/rsa"
 	"crypto/sha512"
 	"encoding/base64"
 	"encoding/hex"
@@ -42,7 +44,8 @@ func SignString(mauthApp *MAuthApp, stringToSign string) (s string, err error) {
 	h := sha512.New()
 	h.Write([]byte(stringToSign))
 	hashed := hex.EncodeToString(h.Sum(nil))
-	encrypted, err := privateEncrypt(mauthApp, []byte(hashed))
+	//encrypted, err := privateEncrypt(mauthApp, []byte(hashed))
+	encrypted, err := rsa.SignPKCS1v15(rand.Reader, mauthApp.RsaPrivateKey, 0, []byte(hashed))
 	if err != nil {
 		return "", err
 	}
